@@ -1,10 +1,15 @@
 import { Hover } from './Hover.jsx';
+import { TechIcon, slugFor } from './TechIcon.jsx';
 import { featuredProject, projects, socials } from '../data/portfolio.js';
 
 function Tag({ children }) {
+  const hasIcon = Boolean(slugFor(children));
   return (
     <span
       style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: hasIcon ? 6 : 0,
         font: "500 11.5px 'IBM Plex Mono', monospace",
         color: 'var(--accent)',
         background: 'var(--accent-12)',
@@ -12,6 +17,7 @@ function Tag({ children }) {
         padding: '4px 10px',
       }}
     >
+      <TechIcon label={children} size={12} />
       {children}
     </span>
   );

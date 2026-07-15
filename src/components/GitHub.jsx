@@ -45,7 +45,7 @@ export function GitHub({ github }) {
           marginTop: 36,
         }}
       >
-        {visibleStats.map((st) => (
+        {/* {visibleStats.map((st) => (
           <div
             key={st.label}
             style={{
@@ -69,7 +69,7 @@ export function GitHub({ github }) {
               {st.label}
             </div>
           </div>
-        ))}
+        ))} */}
       </div>
 
       {/* Contribution graph */}

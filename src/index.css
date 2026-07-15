@@ -29,6 +29,24 @@
   --shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
 }
 
+.np-term-body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--t-line) transparent;
+}
+.np-term-body::-webkit-scrollbar {
+  width: 6px;
+}
+.np-term-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.np-term-body::-webkit-scrollbar-thumb {
+  background: var(--t-line);
+  border-radius: 3px;
+}
+.np-term-body::-webkit-scrollbar-thumb:hover {
+  background: var(--t-dim);
+}
+
 html[data-theme='light'] {
   --bg: #f4f5f1;
   --bg2: #eceee7;

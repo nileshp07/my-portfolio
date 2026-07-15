@@ -2,6 +2,12 @@ export const GITHUB_USERNAME = 'nileshp07';
 export const EMAIL = 'nileshp19423@gmail.com';
 export const RESUME_URL = '/Resume.pdf';
 
+// Fill in country code + number, digits only, e.g. '919876543210'.
+// Leave empty to hide the WhatsApp button.
+export const WHATSAPP_NUMBER = '917057695603';
+export const WHATSAPP_MESSAGE =
+  "Hi Nilesh, I saw your portfolio and would like to connect about an opportunity.";
+
 export const socials = {
   github: 'https://github.com/nileshp07',
   linkedin: 'https://linkedin.com/in/nilesh-parmar07',
@@ -27,14 +33,14 @@ export const marqueeItems = [
 ];
 
 export const skillGroups = [
-  { label: 'LANGUAGES', items: ['JavaScript (ES2022+)', 'TypeScript', 'SQL', 'Python', 'Rust (learning)'] },
-  { label: 'FRONTEND', items: ['React', 'Next.js', 'React Native (Expo)', 'Tailwind CSS', 'shadcn/ui', 'Material UI'] },
+  { label: 'LANGUAGES', items: ['JavaScript (ES2022+)', 'TypeScript', 'SQL', 'Python',] },
+  { label: 'FRONTEND', items: ['React', 'Next.js', 'React Native', 'Tailwind CSS', 'shadcn/ui', 'Material UI'] },
   { label: 'BACKEND', items: ['Node.js', 'Express.js', 'Cloud Functions', 'REST API design'] },
   { label: 'DATABASES & BAAS', items: ['Firestore', 'PostgreSQL', 'MongoDB', 'Supabase'] },
-  { label: 'AI / LLM', items: ['OpenRouter', 'LLM integration', 'Prompt engineering', 'Structured JSON output'] },
+  { label: 'AI / LLM', items: ['OpenRouter', 'LLM integration',, 'Structured JSON output'] },
   {
     label: 'TOOLS & PRACTICES',
-    items: ['Git', 'Docker', 'Prisma ORM', 'Figma', 'Claude Code', 'Cursor', 'RBAC', 'Multi-tenant architecture'],
+    items: ['Git', 'Docker', 'Prisma ORM', 'Figma', 'Claude Code', 'Cursor'],
   },
 ];
 
@@ -60,13 +66,13 @@ export const experience = [
       'Built responsive React UI components for client projects; created Figma prototypes and translated designs into production-ready code with the frontend team.',
     ],
   },
-  {
-    hash: '19d84f0',
-    date: '2021 — 2024 · init',
-    role: 'BCA — Bachelor of Computer Applications',
-    org: 'Ness Wadia College · CGPA 8.5',
-    bullets: [],
-  },
+  // {
+  //   hash: '19d84f0',
+  //   date: '2021 — 2024 · init',
+  //   role: 'BCA — Bachelor of Computer Applications',
+  //   org: 'Ness Wadia College · CGPA 8.5',
+  //   bullets: [],
+  // },
 ];
 
 export const featuredProject = {
@@ -80,7 +86,7 @@ export const featuredProject = {
     '→ tenant-scoped RBAC (form + group level)',
     '→ NL → form config, via LLM pipeline',
   ],
-  stackDepth: 'react ▓▓▓▓▓  firestore ▓▓▓▓░  llm ▓▓▓▓░',
+  // stackDepth: 'react ▓▓▓▓▓  firestore ▓▓▓▓░  llm ▓▓▓▓░',
 };
 
 export const projects = [

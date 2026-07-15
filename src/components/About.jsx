@@ -1,4 +1,5 @@
 import { Hover } from './Hover.jsx';
+import { TechIcon, slugFor } from './TechIcon.jsx';
 import { skillGroups, socials, GITHUB_USERNAME } from '../data/portfolio.js';
 
 export function About() {
@@ -38,9 +39,11 @@ export function About() {
               textWrap: 'pretty',
             }}
           >
-            Full-stack developer with 1+ year of production experience building multi-tenant SaaS.
-            I've shipped RBAC systems, AI-powered form generation via LLM APIs, and configurable data
-            workflows — from Firestore data modeling to prompt engineering for structured outputs.
+           I work across the full stack, though I've been gravitating toward
+           backend and system design lately. Most of what I build day-to-day is
+           web-based — forms, dashboards, data-heavy tools. Outside of work, I'm
+           picking up DevOps and Web3, with the long-term goal of being able to
+           take a product from idea to production by myself.
           </p>
           <div
             style={{
@@ -122,6 +125,9 @@ export function About() {
                     key={s}
                     as="span"
                     style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: slugFor(s) ? 7 : 0,
                       font: "500 12px 'IBM Plex Mono', monospace",
                       color: 'var(--fg2)',
                       border: '1px solid var(--line2)',
@@ -131,6 +137,7 @@ export function About() {
                     }}
                     hoverStyle={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
                   >
+                    <TechIcon label={s} size={13} />
                     {s}
                   </Hover>
                 ))}

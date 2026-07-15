@@ -1,9 +1,21 @@
 import { useRef, useState } from 'react';
 import { Hover } from './Hover.jsx';
-import { EMAIL, RESUME_URL, socials } from '../data/portfolio.js';
+import { TechIcon } from './TechIcon.jsx';
+import {
+  EMAIL,
+  RESUME_URL,
+  WHATSAPP_MESSAGE,
+  WHATSAPP_NUMBER,
+  socials,
+} from '../data/portfolio.js';
+
+const waDigits = WHATSAPP_NUMBER.replace(/\D/g, '');
+const waHref = waDigits
+  ? `https://wa.me/${waDigits}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
+  : null;
 
 export function Contact() {
-  const [copyLabel, setCopyLabel] = useState('copy email');
+  const [copyLabel, setCopyLabel] = useState('copy');
   const timerRef = useRef(null);
 
   const copyEmail = () => {
@@ -14,7 +26,7 @@ export function Contact() {
     }
     setCopyLabel('copied ✓');
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setCopyLabel('copy email'), 1800);
+    timerRef.current = setTimeout(() => setCopyLabel('copy'), 1800);
   };
 
   return (
@@ -67,38 +79,63 @@ export function Contact() {
             marginTop: 30,
           }}
         >
-          <Hover
-            as="a"
-            href={`mailto:${EMAIL}`}
+          {waHref && (
+            <Hover
+              as="a"
+              href={waHref}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 9,
+                background: 'var(--accent)',
+                color: 'var(--accent-ink)',
+                font: "600 13.5px 'IBM Plex Mono', monospace",
+                padding: '13px 24px',
+                borderRadius: 9,
+                transition: 'transform 0.15s',
+              }}
+              hoverStyle={{ transform: 'translateY(-2px)', color: 'var(--accent-ink)' }}
+            >
+              <TechIcon slug="whatsapp" size={16} />
+              Connect on WhatsApp
+            </Hover>
+          )}
+          <div
             style={{
-              background: 'var(--accent)',
-              color: 'var(--accent-ink)',
-              font: "600 13.5px 'IBM Plex Mono', monospace",
-              padding: '13px 24px',
-              borderRadius: 9,
-              transition: 'transform 0.15s',
-            }}
-            hoverStyle={{ transform: 'translateY(-2px)', color: 'var(--accent-ink)' }}
-          >
-            {EMAIL}
-          </Hover>
-          <Hover
-            as="button"
-            onClick={copyEmail}
-            style={{
-              cursor: 'pointer',
-              background: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
               border: '1px solid var(--line2)',
-              color: 'var(--fg)',
-              font: "500 13.5px 'IBM Plex Mono', monospace",
-              padding: '13px 20px',
               borderRadius: 9,
-              transition: 'border-color 0.2s',
+              padding: '0 6px 0 16px',
+              font: "500 13.5px 'IBM Plex Mono', monospace",
+              color: 'var(--fg)',
             }}
-            hoverStyle={{ borderColor: 'var(--accent)' }}
           >
-            {copyLabel}
-          </Hover>
+            <TechIcon slug="gmail" size={15} />
+            <span>{EMAIL}</span>
+            <Hover
+              as="button"
+              onClick={copyEmail}
+              aria-label="Copy email address"
+              style={{
+                cursor: 'pointer',
+                background: 'none',
+                border: '1px solid var(--line2)',
+                color: 'var(--fg2)',
+                font: "500 12px 'IBM Plex Mono', monospace",
+                padding: '8px 12px',
+                borderRadius: 7,
+                marginLeft: 4,
+                transition: 'border-color 0.2s, color 0.2s',
+              }}
+              hoverStyle={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
+            >
+              {copyLabel}
+            </Hover>
+          </div>
           <Hover
             as="a"
             href={RESUME_URL}
@@ -127,16 +164,19 @@ export function Contact() {
           }}
         >
           <Hover as="a" href={socials.github} target="_blank" rel="noreferrer"
-            style={{ color: 'var(--fg2)' }} hoverStyle={{ color: 'var(--accent)' }}>
-            github ↗
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--fg2)' }}
+            hoverStyle={{ color: 'var(--accent)' }}>
+            <TechIcon slug="github" size={15} />github ↗
           </Hover>
           <Hover as="a" href={socials.linkedin} target="_blank" rel="noreferrer"
-            style={{ color: 'var(--fg2)' }} hoverStyle={{ color: 'var(--accent)' }}>
-            linkedin ↗
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--fg2)' }}
+            hoverStyle={{ color: 'var(--accent)' }}>
+            <TechIcon slug="linkedin" size={15} />linkedin ↗
           </Hover>
           <Hover as="a" href={socials.twitter} target="_blank" rel="noreferrer"
-            style={{ color: 'var(--fg2)' }} hoverStyle={{ color: 'var(--accent)' }}>
-            x / twitter ↗
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--fg2)' }}
+            hoverStyle={{ color: 'var(--accent)' }}>
+            <TechIcon slug="x" size={15} /> twitter ↗
           </Hover>
         </div>
       </div>
@@ -152,7 +192,7 @@ export function Contact() {
           gap: 8,
         }}
       >
-        <span>© 2026 Nilesh Parmar — designed &amp; built from scratch</span>
+        <span>© 2026 Nilesh Parmar </span>
         <span>
           pune, in · utc+5:30 · <span style={{ color: 'var(--accent)' }}>$ exit 0</span>
         </span>

@@ -62,7 +62,7 @@ export function Hero({ terminal }) {
             }}
           >
             full-stack developer <span style={{ color: 'var(--fg3)' }}>·</span> react{' '}
-            <span style={{ color: 'var(--fg3)' }}>·</span> typescript
+            <span style={{ color: 'var(--fg3)' }}>·</span> typescript{' '}<span style={{ color: 'var(--fg3)' }}>·</span> node.js
           </div>
           <p
             style={{
@@ -74,8 +74,8 @@ export function Hero({ terminal }) {
               animation: 'fadeUp 0.7s 0.3s both',
             }}
           >
-            I build multi-tenant SaaS — RBAC systems, AI-powered form generation, and data
-            workflows that survive production. Currently shipping at Innover Labs, Pune.
+            Software developer focused on backend architecture and system
+            design, with an eye for clean, usable interfaces.
           </p>
           <div
             style={{ display: 'flex', gap: 12, marginTop: 30, animation: 'fadeUp 0.7s 0.38s both' }}

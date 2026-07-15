@@ -60,6 +60,7 @@ export function Terminal({ terminal }) {
         <div
           ref={bodyRef}
           onClick={focusTerm}
+          className="np-term-body"
           style={{
             height: 348,
             overflowY: 'auto',
