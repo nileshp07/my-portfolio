@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Hover } from './Hover.jsx';
 import { RESUME_URL } from '../data/portfolio.js';
 
 const NAV_LINKS = ['about', 'experience', 'projects', 'github', 'contact'];
 
 export function Nav({ theme, toggleTheme }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const themeIcon = theme === 'dark' ? '☾' : '☀';
   const themeLabel = theme === 'dark' ? 'dark' : 'light';
 
@@ -49,6 +51,7 @@ export function Nav({ theme, toggleTheme }) {
               key={link}
               as="a"
               href={`#${link}`}
+              onClick={() => setMenuOpen(false)}
               style={{ color: 'var(--fg2)' }}
               hoverStyle={{ color: 'var(--accent)' }}
             >
@@ -56,8 +59,19 @@ export function Nav({ theme, toggleTheme }) {
             </Hover>
           ))}
         </div>
+        <button
+          className="np-nav-menu"
+          type="button"
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+          style={{ display: 'none', placeItems: 'center', width: 42, height: 42, padding: 0, cursor: 'pointer', color: 'var(--fg)', background: 'transparent', border: '1px solid var(--line2)', borderRadius: 9, font: "600 18px 'IBM Plex Mono', monospace" }}
+        >
+          {menuOpen ? '×' : '≡'}
+        </button>
         <Hover
           as="button"
+          className="np-theme-toggle"
           onClick={toggleTheme}
           title="toggle theme"
           style={{
@@ -79,6 +93,7 @@ export function Nav({ theme, toggleTheme }) {
         </Hover>
         <Hover
           as="a"
+          className="np-resume-link"
           href={RESUME_URL}
           target="_blank"
           rel="noreferrer"
@@ -95,6 +110,13 @@ export function Nav({ theme, toggleTheme }) {
           resume ⤓
         </Hover>
       </div>
+      {menuOpen && (
+        <div className="np-mobile-menu" style={{ display: 'none', padding: '4px 28px 18px', borderTop: '1px solid var(--line)', background: 'var(--nav-bg)' }}>
+          {NAV_LINKS.map((link) => (
+            <a key={link} href={`#${link}`} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '12px 0', color: 'var(--fg2)', font: "500 13px 'IBM Plex Mono', monospace" }}>{link}</a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

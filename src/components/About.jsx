@@ -99,10 +99,11 @@ export function About() {
           </div>
         </div>
 
-        <div data-reveal style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div data-reveal className="np-stack-groups" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {skillGroups.map((g) => (
             <div
               key={g.label}
+              className="np-stack-group"
               style={{
                 border: '1px solid var(--line)',
                 borderRadius: 12,
@@ -124,6 +125,7 @@ export function About() {
                   <Hover
                     key={s}
                     as="span"
+                    className="np-stack-chip"
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',

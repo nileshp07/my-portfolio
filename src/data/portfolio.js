@@ -76,12 +76,17 @@ export const experience = [
 ];
 
 export const featuredProject = {
-  name: 'DexERP',
+  title: 'DexERP',
+  eyebrow: 'Production platform',
+  image: '',
+  imageAlt: 'DexERP product preview',
+  liveUrl: '',
+  githubUrl: '',
   badges: ['FEATURED', 'PRODUCTION · INNOVER LABS'],
   description:
     'Production multi-tenant ERP platform with a no-code form builder, RBAC, and AI-assisted form generation — core contributor across the full stack, from schema design to UI. Tenant-scoped Firestore query patterns; structured LLM prompt pipelines via Cloud Functions generate form configs from natural language.',
   tags: ['React', 'TypeScript', 'Firebase', 'Node.js', 'OpenRouter LLM'],
-  shipped: [
+  highlights: [
     '→ no-code schema & workflow builder',
     '→ tenant-scoped RBAC (form + group level)',
     '→ NL → form config, via LLM pipeline',
@@ -91,18 +96,29 @@ export const featuredProject = {
 
 export const projects = [
   {
-    name: 'KhataBuddy',
+    title: 'KhataBuddy',
+    eyebrow: 'Mobile product',
+    image: '',
+    imageAlt: 'KhataBuddy app preview',
+    liveUrl: '',
+    githubUrl: '',
     status: 'IN PROGRESS',
     description:
       'Cross-platform group expense splitting app with real-time Firestore sync and per-user debt settlement. Normalized debt graph minimizes settlement transactions; offline-first state reconciliation.',
     tags: ['React Native', 'Expo', 'Firebase', 'NativeWind', 'TypeScript'],
+    highlights: ['real-time group sync', 'offline-first reconciliation', 'optimized debt settlement'],
   },
   {
-    name: 'Natours',
-    link: 'https://github.com/nileshp07/natours',
+    title: 'Natours',
+    eyebrow: 'Backend API',
+    image: '',
+    imageAlt: 'Natours API project preview',
+    liveUrl: '',
+    githubUrl: 'https://github.com/nileshp07/natours',
     description:
       'RESTful tour booking API with MVC architecture — JWT auth, role-based authorization, advanced querying (filtering, sorting, pagination), rate limiting and input sanitization.',
     tags: ['Node.js', 'Express', 'MongoDB', 'REST API', 'JWT'],
+    highlights: ['JWT auth + RBAC', 'advanced filtering and pagination', 'rate limiting and sanitization'],
   },
 ];
 
