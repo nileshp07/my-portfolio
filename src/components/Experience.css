@@ -1,0 +1,131 @@
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line-2);
+}
+
+.role {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+  padding: clamp(32px, 4vw, 48px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.role__meta {
+  position: relative;
+  padding-left: 24px;
+}
+
+/* Timeline node + rail that runs down the meta column. */
+.role__meta::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--fg-3);
+}
+
+.role__meta::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 24px;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(var(--line-3), transparent);
+}
+
+.role--current .role__meta::before {
+  background: var(--accent);
+  box-shadow: 0 0 0 5px var(--accent-soft);
+}
+
+.role__period {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.role__duration {
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.role__where {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--fg-3);
+}
+
+.role__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.role__title {
+  font-size: clamp(22px, 2.4vw, 28px);
+  letter-spacing: -0.03em;
+}
+
+.role__org {
+  font-weight: 450;
+  color: var(--fg-2);
+}
+
+.role__bullets {
+  display: grid;
+  gap: 12px;
+  max-width: 720px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.role__bullets li {
+  position: relative;
+  padding-left: 24px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--fg-2);
+}
+
+.role__bullets li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.66em;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.role__bullets strong {
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.role__stack {
+  margin-top: 24px;
+}
+
+@media (max-width: 860px) {
+  .role {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .role__meta::after {
+    display: none;
+  }
+}

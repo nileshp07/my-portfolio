@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GITHUB_USERNAME } from '../data/portfolio.js';
+import { MONTHS } from '../lib/dates.js';
 
 const LANG_COLORS = {
   JavaScript: '#f1e05a',
@@ -7,139 +8,99 @@ const LANG_COLORS = {
   HTML: '#e34c26',
   CSS: '#663399',
   SCSS: '#c6538c',
-  Python: '#3572A5',
+  Python: '#3572a5',
   Rust: '#dea584',
   Pug: '#a86454',
   EJS: '#a91e50',
 };
 
 const FALLBACK_LANGS = [
-  { name: 'JavaScript', pct: '', w: '46%', color: '#f1e05a' },
-  { name: 'TypeScript', pct: '', w: '30%', color: '#3178c6' },
-  { name: 'CSS', pct: '', w: '14%', color: '#663399' },
-  { name: 'HTML', pct: '', w: '10%', color: '#e34c26' },
+  { name: 'JavaScript', pct: 46, color: LANG_COLORS.JavaScript },
+  { name: 'TypeScript', pct: 30, color: LANG_COLORS.TypeScript },
+  { name: 'CSS', pct: 14, color: LANG_COLORS.CSS },
+  { name: 'HTML', pct: 10, color: LANG_COLORS.HTML },
 ];
 
-const INITIAL_STATS = [
-  { label: 'PUBLIC REPOS', v: '—' },
-  { label: 'CONTRIBUTIONS / YR', v: '—' },
-  { label: 'STARS EARNED', v: '—' },
-  { label: 'FOLLOWERS', v: '—' },
-];
+const toDate = (iso) => new Date(`${iso}T00:00:00`);
+
+async function loadContributions(signal) {
+  const res = await fetch(
+    `https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?y=last`,
+    { signal }
+  );
+  if (!res.ok) throw new Error(`contributions ${res.status}`);
+  const data = await res.json();
+  const days = data.contributions || [];
+  if (!days.length) throw new Error('no contribution data');
+
+  const total = data.total?.lastYear ?? days.reduce((sum, d) => sum + d.count, 0);
+
+  // Pad the first week so rows line up with weekdays (Sun → Sat).
+  const cells = Array(toDate(days[0].date).getDay()).fill(null).concat(days);
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
+  // A month label sits above the first week in which that month appears.
+  const months = [];
+  let last = -1;
+  weeks.forEach((week, index) => {
+    const first = week.find(Boolean);
+    if (!first) return;
+    const m = toDate(first.date).getMonth();
+    if (m !== last) {
+      months.push({ index, label: MONTHS[m] });
+      last = m;
+    }
+  });
+  // Drop a leading label that would collide with the next one.
+  if (months.length > 1 && months[1].index - months[0].index < 3) months.shift();
+
+  const busiest = days.reduce((max, d) => (d.count > max.count ? d : max), days[0]);
+
+  return { status: 'ok', weeks, months, total, busiest };
+}
+
+async function loadLanguages(signal) {
+  const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100`, {
+    signal,
+  });
+  const repos = await res.json();
+  if (!Array.isArray(repos)) throw new Error('rate limited');
+
+  const bySize = {};
+  repos.forEach((r) => {
+    if (r.language) bySize[r.language] = (bySize[r.language] || 0) + Math.max(r.size || 0, 1);
+  });
+  const totalSize = Object.values(bySize).reduce((a, b) => a + b, 0) || 1;
+
+  const langs = Object.entries(bySize)
+    .map(([name, size]) => ({ name, pct: (size / totalSize) * 100 }))
+    .filter((l) => l.pct >= 1)
+    .sort((a, b) => b.pct - a.pct)
+    .slice(0, 5)
+    .map((l) => ({ ...l, color: LANG_COLORS[l.name] || 'var(--accent)' }));
+
+  return { status: 'ok', langs };
+}
 
 export function useGitHub() {
-  const [state, setState] = useState({
-    ok: false,
-    failed: false,
-    weeks: [],
-    totalLabel: 'contributions — last 12 months',
-    langs: [],
-    stats: INITIAL_STATS,
-  });
+  const [contributions, setContributions] = useState({ status: 'loading' });
+  const [languages, setLanguages] = useState({ status: 'loading', langs: [] });
 
   useEffect(() => {
-    let alive = true;
-    const patch = (fn) => {
-      if (alive) setState((s) => (typeof fn === 'function' ? { ...s, ...fn(s) } : { ...s, ...fn }));
-    };
+    const ctrl = new AbortController();
+    const { signal } = ctrl;
 
-    async function fetchContributions() {
-      try {
-        const res = await fetch(
-          `https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?y=last`
-        );
-        const data = await res.json();
-        const days = data.contributions || [];
-        if (!days.length) throw new Error('empty');
-        const total =
-          (data.total && (data.total.lastYear ?? Object.values(data.total)[0])) ||
-          days.reduce((a, d) => a + d.count, 0);
+    loadContributions(signal)
+      .then(setContributions)
+      .catch(() => !signal.aborted && setContributions({ status: 'error' }));
 
-        const cells = [];
-        const offset = new Date(days[0].date + 'T00:00:00').getDay();
-        for (let i = 0; i < offset; i++) cells.push(null);
-        days.forEach((d) => cells.push(d));
+    loadLanguages(signal)
+      .then(setLanguages)
+      .catch(() => !signal.aborted && setLanguages({ status: 'fallback', langs: FALLBACK_LANGS }));
 
-        const weeks = [];
-        for (let i = 0; i < cells.length; i += 7) {
-          weeks.push({
-            days: cells.slice(i, i + 7).map((d) =>
-              d
-                ? {
-                    bg: 'var(--gh' + Math.min(d.level, 4) + ')',
-                    tip: d.count + ' contributions · ' + d.date,
-                  }
-                : { bg: 'transparent', tip: '' }
-            ),
-          });
-        }
-
-        patch((s) => ({
-          ok: true,
-          weeks,
-          totalLabel: total.toLocaleString() + ' contributions — last 12 months',
-          stats: s.stats.map((st) =>
-            st.label === 'CONTRIBUTIONS / YR' ? { ...st, v: total.toLocaleString() } : st
-          ),
-        }));
-      } catch (e) {
-        patch({ failed: true, ok: false });
-      }
-    }
-
-    async function fetchReposAndUser() {
-      try {
-        const [reposRes, userRes] = await Promise.all([
-          fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100`),
-          fetch(`https://api.github.com/users/${GITHUB_USERNAME}`),
-        ]);
-        const repos = await reposRes.json();
-        const user = await userRes.json();
-        if (!Array.isArray(repos)) throw new Error('rate limited');
-
-        const stars = repos.reduce((a, r) => a + (r.stargazers_count || 0), 0);
-        const agg = {};
-        repos.forEach((r) => {
-          if (r.language) agg[r.language] = (agg[r.language] || 0) + Math.max(r.size || 0, 1);
-        });
-        const totalSize = Object.values(agg).reduce((a, b) => a + b, 0) || 1;
-        const langs = Object.entries(agg)
-          .sort((a, b) => b[1] - a[1])
-          .filter(([, size]) => (size / totalSize) * 100 >= 1)
-          .slice(0, 4)
-          .map(([name, size]) => ({
-            name,
-            pct: ((size / totalSize) * 100).toFixed(1) + '%',
-            w: Math.max((size / totalSize) * 100, 2).toFixed(1) + '%',
-            color: LANG_COLORS[name] || 'var(--accent)',
-          }));
-
-        patch((s) => ({
-          langs,
-          stats: s.stats.map((st) => {
-            if (st.label === 'PUBLIC REPOS' && user.public_repos != null)
-              return { ...st, v: String(user.public_repos) };
-            if (st.label === 'STARS EARNED') return { ...st, v: String(stars) };
-            if (st.label === 'FOLLOWERS' && user.followers != null)
-              return { ...st, v: String(user.followers) };
-            return st;
-          }),
-        }));
-      } catch (e) {
-        patch({ langs: FALLBACK_LANGS });
-      }
-    }
-
-    fetchContributions();
-    fetchReposAndUser();
-
-    return () => {
-      alive = false;
-    };
+    return () => ctrl.abort();
   }, []);
 
-  // Hide any stat that resolved to exactly "0", matching the source design.
-  const visibleStats = state.stats.filter((st) => st.v !== '0');
-
-  return { ...state, visibleStats };
+  return { contributions, languages };
 }

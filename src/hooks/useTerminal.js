@@ -1,37 +1,52 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { EMAIL, RESUME_URL, socials } from '../data/portfolio.js';
+import {
+  CAREER_START,
+  EMAIL,
+  RESUME_URL,
+  profile,
+  skillGroups,
+  socials,
+} from '../data/portfolio.js';
+import { experienceYears } from '../lib/dates.js';
 
-const COLORS = {
-  cmd: 'var(--t-text)',
-  out: 'var(--t-dim)',
-  ok: 'var(--t-green)',
-  warn: 'var(--t-amber)',
-  err: 'var(--t-red)',
-  txt: 'var(--t-text)',
-};
-
-function line(kind, text) {
-  return { p: kind === 'cmd' ? '➜ ~ ' : '', t: text, c: COLORS[kind] || COLORS.out };
-}
+// tone → CSS class suffix in Terminal.css
+const line = (tone, text, prompt = false) => ({ tone, text, prompt });
+const cmdLine = (text) => line('cmd', text, true);
 
 const SECTIONS = {
   about: 'about',
-  skills: 'about',
   experience: 'experience',
   work: 'projects',
   projects: 'projects',
   github: 'github',
   gh: 'github',
-  certs: 'certs',
-  certifications: 'certs',
+  certs: 'about',
+  education: 'about',
   contact: 'contact',
 };
 
-export function useTerminal({ theme, setTheme, bootAnimation = true }) {
-  const [termLines, setTermLines] = useState([]);
-  const [termInput, setTermInput] = useState('');
+const COMMANDS = [
+  'help',
+  'whoami',
+  'ls',
+  'skills',
+  'resume',
+  'theme',
+  'email',
+  'socials',
+  'clear',
+  'sudo hire-me',
+  ...Object.keys(SECTIONS),
+];
+
+const LS_OUTPUT = 'about/  experience/  projects/  github/  certs/  contact/';
+
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
+export function useTerminal({ theme, setTheme }) {
+  const [lines, setLines] = useState([]);
+  const [input, setInput] = useState('');
   const [booted, setBooted] = useState(false);
-  const [booting, setBooting] = useState(true);
 
   const aliveRef = useRef(true);
   const bootStartedRef = useRef(false);
@@ -41,215 +56,210 @@ export function useTerminal({ theme, setTheme, bootAnimation = true }) {
   const inputRef = useRef(null);
   const themeRef = useRef(theme);
   const setThemeRef = useRef(setTheme);
-  const scrollPendingRef = useRef(false);
 
   useEffect(() => {
     themeRef.current = theme;
-  }, [theme]);
-  useEffect(() => {
     setThemeRef.current = setTheme;
-  }, [setTheme]);
+  }, [theme, setTheme]);
 
-  // Keep the terminal scrolled to the bottom after new lines render.
+  // Keep the terminal pinned to its newest line.
   useEffect(() => {
-    if (scrollPendingRef.current && bodyRef.current) {
-      bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
-      scrollPendingRef.current = false;
-    }
-  });
+    const body = bodyRef.current;
+    if (body) body.scrollTop = body.scrollHeight;
+  }, [lines]);
 
-  const push = useCallback((lines) => {
-    scrollPendingRef.current = true;
-    setTermLines((prev) => prev.concat(lines));
-  }, []);
+  const push = useCallback((next) => setLines((prev) => prev.concat(next)), []);
 
   const jump = useCallback((id, label) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const y = el.getBoundingClientRect().top + window.scrollY - 74;
-      setTimeout(() => window.scrollTo({ top: y, behavior: 'smooth' }), 350);
-    }
-    return [line('ok', '→ cd ./' + label + '  — taking you there…')];
+    setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 350);
+    return [line('ok', `→ cd ./${label} — taking you there…`)];
   }, []);
 
   const runCommand = useCallback(
     (raw) => {
-      const cmd = raw.trim().toLowerCase();
+      const cmd = raw.trim().toLowerCase().replace(/\s+/g, ' ');
       if (cmd === '') return [];
+
       if (cmd === 'help')
         return [
-          line('txt', 'available commands:'),
+          line('txt', 'available commands'),
           line('out', '  about · experience · projects · github · certs · contact'),
-          line('out', '  whoami     — who is this guy'),
-          line('out', '  resume     — open resume.pdf'),
-          line('out', '  theme      — toggle dark / light'),
-          line('out', '  email      — copy my email'),
-          line('out', '  socials    — all the links'),
-          line('out', '  clear      — wipe the session'),
+          line('out', '  whoami    who is this guy'),
+          line('out', '  skills    the toolbox'),
+          line('out', '  resume    open resume.pdf'),
+          line('out', '  email     copy my email'),
+          line('out', '  socials   all the links'),
+          line('out', '  theme     toggle dark / light'),
+          line('out', '  clear     wipe the session'),
           line('warn', '  sudo hire-me   (recruiters only)'),
+          line('dim', '  tip: ↑/↓ for history, tab to autocomplete'),
         ];
+
       if (cmd === 'whoami')
         return [
-          line('txt', 'nilesh parmar — full-stack developer'),
-          line('out', '1+ yr production experience · multi-tenant SaaS · RBAC · LLM pipelines'),
+          line('txt', `${profile.name.toLowerCase()} — ${profile.role.toLowerCase()} @ ${profile.company.toLowerCase()}`),
+          line('out', `${experienceYears(CAREER_START)}+ yrs in production · multi-tenant saas · rbac · llm pipelines`),
         ];
-      if (cmd === 'ls' || cmd === 'ls ./portfolio' || cmd === 'ls -la')
-        return [line('ok', 'about/  experience/  projects/  github/  certs/  contact/')];
+
+      if (cmd === 'ls' || cmd === 'ls -la' || cmd === 'ls ./portfolio') return [line('ok', LS_OUTPUT)];
+
+      if (cmd === 'skills' || cmd === 'stack')
+        return skillGroups.map((g) =>
+          line('out', `${g.label.toLowerCase().padEnd(10)} ${g.items.join(' · ')}`)
+        );
+
       if (SECTIONS[cmd]) return jump(SECTIONS[cmd], cmd);
-      if (cmd === 'resume' || cmd === 'cv' || cmd === 'open resume' || cmd === 'cat resume') {
-        window.open(RESUME_URL, '_blank');
+
+      if (['resume', 'cv', 'open resume', 'cat resume'].includes(cmd)) {
+        window.open(RESUME_URL, '_blank', 'noopener');
         return [line('ok', 'opening resume.pdf ⤓')];
       }
+
       if (cmd === 'theme' || cmd === 'theme toggle') {
         const next = themeRef.current === 'dark' ? 'light' : 'dark';
         setThemeRef.current(next);
-        return [line('ok', 'theme → ' + next + ' mode ' + (next === 'dark' ? '☾' : '☀'))];
+        return [line('ok', `theme → ${next} mode`)];
       }
+
       if (cmd === 'email') {
-        try {
-          navigator.clipboard.writeText(EMAIL);
-        } catch (e) {
-          /* ignore */
-        }
-        return [line('ok', EMAIL + ' — copied to clipboard ✓')];
+        navigator.clipboard?.writeText(EMAIL).catch(() => {});
+        return [line('ok', `${EMAIL} — copied to clipboard ✓`)];
       }
+
       if (cmd === 'socials' || cmd === 'links')
         return [
-          line('out', 'github    → ' + socials.github.replace('https://', '')),
-          line('out', 'linkedin  → ' + socials.linkedin.replace('https://', '')),
-          line('out', 'x/twitter → ' + socials.twitter.replace('https://', '')),
+          line('out', `github    → ${socials.github.replace('https://', '')}`),
+          line('out', `linkedin  → ${socials.linkedin.replace('https://', '')}`),
+          line('out', `x         → ${socials.twitter.replace('https://', '')}`),
         ];
+
       if (cmd === 'clear' || cmd === 'cls') {
-        setTimeout(() => setTermLines([]), 0);
+        setTimeout(() => setLines([]), 0);
         return [];
       }
-      if (cmd === 'sudo hire-me' || cmd === 'sudo hire me' || cmd === 'hire-me' || cmd === 'hire') {
+
+      if (['sudo hire-me', 'sudo hire me', 'hire-me', 'hire me', 'hire'].includes(cmd)) {
         jump('contact', 'contact');
         return [
-          line('out', '[sudo] password for recruiter: ••••••••'),
-          line('ok', 'access granted ✓ — opening contact channel…'),
+          line('dim', '[sudo] password for recruiter: ••••••••'),
+          line('ok', 'access granted ✓ — opening a direct line…'),
         ];
       }
-      if (cmd === 'exit')
-        return [line('warn', 'nice try. there is no escape from good engineering.')];
-      return [
-        line('err', 'zsh: command not found: ' + cmd),
-        line('out', 'type `help` for the full list'),
-      ];
+
+      if (cmd === 'exit') return [line('warn', 'nice try. there is no escape from good engineering.')];
+      if (cmd.startsWith('sudo')) return [line('err', 'recruiter is not in the sudoers file. try `sudo hire-me`')];
+
+      return [line('err', `zsh: command not found: ${cmd}`), line('dim', 'type `help` for the full list')];
     },
     [jump]
+  );
+
+  // Runs a command as if it had been typed, including history.
+  const execute = useCallback(
+    (raw) => {
+      if (raw.trim()) {
+        historyRef.current.push(raw);
+        histIdxRef.current = historyRef.current.length;
+      }
+      push([cmdLine(raw)].concat(runCommand(raw)));
+      setInput('');
+    },
+    [push, runCommand]
   );
 
   // Boot sequence — types the intro commands character by character.
   useEffect(() => {
     aliveRef.current = true;
-    const reduced =
-      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const instant = reduced || bootAnimation === false;
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
     const seq = [
       [
         'whoami',
         [
-          line('txt', 'nilesh parmar — full-stack developer'),
-          line('out', 'react · typescript · node · firebase — pune, IN'),
+          line('txt', `${profile.name.toLowerCase()} — ${profile.role.toLowerCase()}`),
+          line('out', 'react · typescript · node · firebase — pune, in'),
         ],
       ],
-      ['ls ./portfolio', [line('ok', 'about/  experience/  projects/  github/  certs/  contact/')]],
+      ['ls ./portfolio', [line('ok', LS_OUTPUT)]],
     ];
+    const outro = line('dim', 'type `help` to explore — or just scroll ↓');
 
     const typeCmd = async (text) => {
-      scrollPendingRef.current = true;
-      setTermLines((prev) => prev.concat([line('cmd', '')]));
+      setLines((prev) => prev.concat(cmdLine('')));
       for (let i = 1; i <= text.length; i++) {
         if (!aliveRef.current) return;
-        await new Promise((r) => setTimeout(r, 34));
-        scrollPendingRef.current = true;
-        setTermLines((prev) => {
-          const lines = prev.slice();
-          lines[lines.length - 1] = line('cmd', text.slice(0, i));
-          return lines;
+        await pause(38);
+        setLines((prev) => {
+          const next = prev.slice();
+          next[next.length - 1] = cmdLine(text.slice(0, i));
+          return next;
         });
       }
     };
 
     const boot = async () => {
-      if (instant) {
-        const all = [];
-        seq.forEach(([cmd, outs]) => {
-          all.push(line('cmd', cmd));
-          outs.forEach((o) => all.push(o));
-        });
-        all.push(line('out', 'type `help` to explore — or just scroll ↓'));
-        push(all);
+      if (reduced) {
+        setLines(seq.flatMap(([cmd, outs]) => [cmdLine(cmd), ...outs]).concat(outro));
         setBooted(true);
-        setBooting(false);
         return;
       }
-      await new Promise((r) => setTimeout(r, 900));
+      await pause(1100);
       for (const [cmd, outs] of seq) {
         if (!aliveRef.current) return;
         await typeCmd(cmd);
-        await new Promise((r) => setTimeout(r, 180));
+        await pause(200);
         push(outs);
-        await new Promise((r) => setTimeout(r, 420));
+        await pause(450);
       }
-      push([line('out', 'type `help` to explore — or just scroll ↓')]);
+      push([outro]);
       setBooted(true);
-      setBooting(false);
     };
 
-    // Guard against React StrictMode's double-invoke in dev so the boot
-    // sequence only runs (and prints) once. aliveRef is reset to true above on
-    // every invoke, so the single in-flight boot survives the remount.
+    // StrictMode double-invokes effects in dev; only ever boot once.
     if (!bootStartedRef.current) {
       bootStartedRef.current = true;
       boot();
     }
-
     return () => {
       aliveRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onTermKey = useCallback(
+  const onKeyDown = useCallback(
     (e) => {
       if (e.key === 'Enter') {
-        const raw = termInput;
-        historyRef.current.push(raw);
-        histIdxRef.current = historyRef.current.length;
-        const out = runCommand(raw);
-        push([line('cmd', raw)].concat(out));
-        setTermInput('');
+        execute(input);
+      } else if (e.key === 'Tab') {
+        const partial = input.trim().toLowerCase();
+        if (!partial) return;
+        e.preventDefault();
+        const matches = COMMANDS.filter((c) => c.startsWith(partial));
+        if (matches.length === 1) setInput(matches[0]);
+        else if (matches.length > 1) push([cmdLine(input), line('dim', matches.join('   '))]);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (historyRef.current.length) {
           histIdxRef.current = Math.max(0, histIdxRef.current - 1);
-          setTermInput(historyRef.current[histIdxRef.current] || '');
+          setInput(historyRef.current[histIdxRef.current] || '');
         }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         histIdxRef.current = Math.min(historyRef.current.length, histIdxRef.current + 1);
-        setTermInput(historyRef.current[histIdxRef.current] || '');
+        setInput(historyRef.current[histIdxRef.current] || '');
+      } else if (e.key === 'l' && e.ctrlKey) {
+        e.preventDefault();
+        setLines([]);
       }
     },
-    [termInput, runCommand, push]
+    [execute, input, push]
   );
 
-  const focusTerm = useCallback(() => {
-    if (inputRef.current) inputRef.current.focus();
+  const focus = useCallback(() => {
+    // Don't steal focus from a text selection inside the terminal.
+    if (window.getSelection()?.toString()) return;
+    inputRef.current?.focus({ preventScroll: true });
   }, []);
 
-  return {
-    termLines,
-    termInput,
-    setTermInput,
-    booted,
-    booting,
-    bodyRef,
-    inputRef,
-    onTermKey,
-    focusTerm,
-  };
+  return { lines, input, setInput, booted, bodyRef, inputRef, onKeyDown, focus, execute };
 }

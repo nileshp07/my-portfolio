@@ -1,153 +1,155 @@
-import { Hover } from './Hover.jsx';
-import { TechIcon, slugFor } from './TechIcon.jsx';
-import { skillGroups, socials, GITHUB_USERNAME } from '../data/portfolio.js';
+import {
+  CAREER_START,
+  GITHUB_USERNAME,
+  certifications,
+  education,
+  profile,
+  skillGroups,
+} from '../data/portfolio.js';
+import { experienceYears } from '../lib/dates.js';
+import { useLocalTime } from '../hooks/useLocalTime.js';
+import { ArrowRight, ArrowUpRight, Award, GraduationCap } from './ui/Icons.jsx';
+import { Reveal } from './ui/Reveal.jsx';
+import { SectionHeader } from './ui/SectionHeader.jsx';
+import { Chip } from './ui/TechIcon.jsx';
+import './About.css';
 
 export function About() {
-  return (
-    <div
-      id="about"
-      style={{ maxWidth: 1160, margin: '0 auto', padding: '110px 28px 0', scrollMarginTop: 70 }}
-    >
-      <div data-reveal style={{ font: "500 13px 'IBM Plex Mono', monospace", color: 'var(--accent)' }}>
-        $ cat ./about.md
-      </div>
-      <div
-        className="np-about-grid"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 56,
-          marginTop: 22,
-          alignItems: 'start',
-        }}
-      >
-        <div data-reveal>
-          <h2
-            style={{
-              font: "700 clamp(30px, 3.4vw, 42px)/1.15 'Space Grotesk', sans-serif",
-              letterSpacing: '-0.02em',
-              margin: 0,
-            }}
-          >
-            Comfortable across the stack — schema to screen.
-          </h2>
-          <p
-            style={{
-              font: "400 15.5px/1.75 'Space Grotesk', sans-serif",
-              color: 'var(--fg2)',
-              margin: '18px 0 0',
-              textWrap: 'pretty',
-            }}
-          >
-           I work across the full stack, though I've been gravitating toward
-           backend and system design lately. Most of what I build day-to-day is
-           web-based — forms, dashboards, data-heavy tools. Outside of work, I'm
-           picking up DevOps and Web3, with the long-term goal of being able to
-           take a product from idea to production by myself.
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 14,
-              marginTop: 26,
-              border: '1px solid var(--line)',
-              borderRadius: 12,
-              padding: '14px 16px',
-              background: 'var(--panel)',
-            }}
-          >
-            <img
-              src={`https://github.com/${GITHUB_USERNAME}.png`}
-              alt="Nilesh Parmar"
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: '50%',
-                border: '2px solid var(--accent-40)',
-              }}
-            />
-            <div>
-              <div style={{ font: "600 14.5px 'Space Grotesk', sans-serif" }}>Nilesh Parmar</div>
-              <div
-                style={{
-                  font: "400 12px 'IBM Plex Mono', monospace",
-                  color: 'var(--fg3)',
-                  marginTop: 2,
-                }}
-              >
-                Pune, IN · UTC+5:30 · BCA, CGPA 8.5
-              </div>
-            </div>
-            <div style={{ flex: 1 }} />
-            <Hover
-              as="a"
-              href={socials.github}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                font: "500 12px 'IBM Plex Mono', monospace",
-                color: 'var(--fg2)',
-                border: '1px solid var(--line2)',
-                borderRadius: 8,
-                padding: '7px 12px',
-              }}
-              hoverStyle={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
-            >
-              @{GITHUB_USERNAME} ↗
-            </Hover>
-          </div>
-        </div>
+  const years = experienceYears(CAREER_START);
+  const time = useLocalTime(profile.timezone);
 
-        <div data-reveal className="np-stack-groups" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {skillGroups.map((g) => (
-            <div
-              key={g.label}
-              className="np-stack-group"
-              style={{
-                border: '1px solid var(--line)',
-                borderRadius: 12,
-                background: 'var(--panel)',
-                padding: '14px 18px',
-              }}
-            >
-              <div
-                style={{
-                  font: "600 10.5px 'IBM Plex Mono', monospace",
-                  color: 'var(--fg3)',
-                  letterSpacing: '0.14em',
-                }}
-              >
-                {g.label}
-              </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 10 }}>
-                {g.items.map((s) => (
-                  <Hover
-                    key={s}
-                    as="span"
-                    className="np-stack-chip"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: slugFor(s) ? 7 : 0,
-                      font: "500 12px 'IBM Plex Mono', monospace",
-                      color: 'var(--fg2)',
-                      border: '1px solid var(--line2)',
-                      borderRadius: 99,
-                      padding: '4px 11px',
-                      transition: 'all 0.15s',
-                    }}
-                    hoverStyle={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
-                  >
-                    <TechIcon label={s} size={13} />
-                    {s}
-                  </Hover>
-                ))}
+  return (
+    <section id="about" className="section" aria-labelledby="about-title">
+      <div className="container">
+        <SectionHeader
+          id="about-title"
+          kicker="About"
+          title="Backend-minded."
+          subtitle="Product-focused."
+        />
+
+        <div className="bento">
+          <Reveal className="bento__card bento__story">
+            <p className="bento__lead">
+              I&apos;m a full-stack developer at <strong>{profile.company}</strong> in Pune, where
+              I&apos;ve spent the last {years}+ years building DexERP, a multi-tenant ERP in which
+              every organization shapes its own forms, workflows and permissions.
+            </p>
+            <p>
+              I work across the stack, but I&apos;ve been gravitating toward{' '}
+              <strong>backend architecture and system design</strong>: data models, access control,
+              and getting LLMs to return something a program can actually trust. Day to day, that
+              means forms, dashboards and data-heavy tools.
+            </p>
+            <p>
+              Outside work I&apos;m picking up DevOps and Web3, with a long-term goal of taking a
+              product from idea to production on my own.
+            </p>
+            <div className="bento__cta">
+              <p>Looking for full-stack and frontend roles, remote or in Pune.</p>
+              <a className="btn btn--ghost btn--sm" href="#contact">
+                Get in touch
+                <ArrowRight />
+              </a>
+            </div>
+          </Reveal>
+
+          <Reveal className="bento__card bento__profile" delay={80}>
+            <div className="profile__id">
+              <img
+                className="profile__avatar"
+                src={`https://github.com/${GITHUB_USERNAME}.png?size=112`}
+                alt=""
+                width="52"
+                height="52"
+                loading="lazy"
+              />
+              <div>
+                <p className="profile__name">{profile.name}</p>
+                <p className="profile__role">
+                  {profile.role} · {profile.company}
+                </p>
               </div>
             </div>
-          ))}
+            <div className="profile__clock">
+              <p className="profile__time tnum">{time}</p>
+              <p className="profile__zone">
+                Local time in {profile.location} ({profile.timezoneLabel})
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal className="bento__card bento__now" delay={140}>
+            <h3 className="bento__title">Right now</h3>
+            <dl className="now-list">
+              <div>
+                <dt className="label">Building</dt>
+                <dd>DexERP at {profile.company}</dd>
+              </div>
+              <div>
+                <dt className="label">Side project</dt>
+                <dd>KhataBuddy, a React Native expense splitter</dd>
+              </div>
+              <div>
+                <dt className="label">Learning</dt>
+                <dd>DevOps and Web3</dd>
+              </div>
+            </dl>
+          </Reveal>
+
+          <Reveal className="bento__card bento__tools">
+            <h3 className="bento__title">
+              Toolbox
+              <span className="muted">
+                {skillGroups.reduce((n, g) => n + g.items.length, 0)} tools
+              </span>
+            </h3>
+            <div className="tools">
+              {skillGroups.map((group) => (
+                <div key={group.label} className="tools__row">
+                  <p className="tools__label">{group.label}</p>
+                  <ul className="chips">
+                    {group.items.map((item) => (
+                      <Chip key={item} label={item} />
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal className="bento__card bento__edu" delay={80}>
+            <span className="edu__icon" aria-hidden="true">
+              <GraduationCap />
+            </span>
+            <h3 className="bento__title">Education</h3>
+            <p className="edu__degree">{education.degree}</p>
+            <p className="edu__school">
+              {education.school} · {education.period}
+            </p>
+            <p className="edu__grade">
+              <span className="tnum">{education.grade}</span> CGPA
+            </p>
+
+            <h3 className="bento__title edu__certs-title">Certifications</h3>
+            <ul className="certs">
+              {certifications.map((c) => (
+                <li key={c.title}>
+                  <a className="cert" href={c.link} target="_blank" rel="noreferrer">
+                    <Award className="cert__icon" />
+                    <span className="cert__text">
+                      <span className="cert__title">{c.title}</span>
+                      <span className="cert__issuer">{c.issuer} · Verified</span>
+                    </span>
+                    <ArrowUpRight className="cert__go" />
+                    <span className="sr-only">(opens in a new tab)</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

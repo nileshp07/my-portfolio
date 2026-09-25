@@ -1,0 +1,176 @@
+.contact__card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(40px, 7vw, 96px) clamp(24px, 6vw, 88px);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  text-align: center;
+}
+
+/* Grid + slow-drifting glow behind the card content. */
+.contact__card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center;
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 100%, #000, transparent 75%);
+  mask-image: radial-gradient(ellipse 60% 70% at 50% 100%, #000, transparent 75%);
+}
+
+.contact__glow {
+  position: absolute;
+  left: 50%;
+  bottom: -55%;
+  z-index: -1;
+  width: min(760px, 120%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  filter: blur(80px);
+  transform: translateX(-50%);
+}
+
+.contact .section-head__kicker {
+  justify-content: center;
+}
+
+.contact__title {
+  max-width: 820px;
+  margin: 20px auto 0;
+  font-size: clamp(40px, 6.6vw, 84px);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.contact__intro {
+  max-width: 540px;
+  margin: 22px auto 0;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--fg-2);
+}
+
+.contact__email {
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 100%;
+  margin-top: 40px;
+  overflow: hidden;
+  border: 1px solid var(--line-3);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.contact__email-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px 22px;
+  font-size: clamp(16px, 2.2vw, 24px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  transition: color 0.2s;
+}
+
+.contact__email-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact__email-link svg {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  color: var(--accent);
+}
+
+.contact__email-link:hover {
+  color: var(--accent);
+}
+
+.contact__copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  border: 0;
+  border-left: 1px solid var(--line-3);
+  background: transparent;
+  font: 500 14px/1 var(--font-sans);
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.contact__copy svg {
+  width: 16px;
+  height: 16px;
+}
+
+.contact__copy:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.contact__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.contact__meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 36px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-3);
+}
+
+.contact__meta svg {
+  width: 15px;
+  height: 15px;
+}
+
+.contact__meta strong {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+@media (max-width: 560px) {
+  .contact__email {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contact__email-link {
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .contact__copy {
+    justify-content: center;
+    padding: 12px;
+    border-left: 0;
+    border-top: 1px solid var(--line-3);
+  }
+
+  .contact__actions .btn {
+    width: 100%;
+  }
+}

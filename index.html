@@ -2,19 +2,71 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Nilesh Parmar — Full-Stack Developer</title>
-    <meta name="description" content="Full-stack developer building multi-tenant SaaS — RBAC systems, AI-powered form generation, and data workflows that survive production. React · TypeScript · Node.js." />
+    <meta
+      name="description"
+      content="Nilesh Parmar is a full-stack developer in Pune building multi-tenant SaaS with React, TypeScript, Node.js and Firebase. Open to full-stack and frontend roles."
+    />
+    <meta name="author" content="Nilesh Parmar" />
+    <meta name="theme-color" content="#0b0c0a" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Social previews -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Nilesh Parmar — Full-Stack Developer" />
+    <meta
+      property="og:description"
+      content="Full-stack developer building multi-tenant SaaS, from schema to screen. React · TypeScript · Node.js."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nileshParmar_7" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Nilesh Parmar",
+        "jobTitle": "Full-Stack Developer",
+        "worksFor": { "@type": "Organization", "name": "Innover Labs" },
+        "address": { "@type": "PostalAddress", "addressLocality": "Pune", "addressCountry": "IN" },
+        "knowsAbout": ["React", "TypeScript", "Node.js", "Firebase", "Multi-tenant SaaS", "RBAC"],
+        "sameAs": [
+          "https://github.com/nileshp07",
+          "https://linkedin.com/in/nilesh-parmar07",
+          "https://x.com/nileshParmar_7"
+        ]
+      }
+    </script>
+
+    <!-- Apply the saved (or OS) theme before first paint to avoid a flash. -->
+    <script>
+      (function () {
+        var t = 'dark';
+        try {
+          var saved = localStorage.getItem('np_theme');
+          if (saved === 'light' || saved === 'dark') t = saved;
+          else if (window.matchMedia('(prefers-color-scheme: light)').matches) t = 'light';
+        } catch (e) {}
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <p style="padding: 24px; font-family: sans-serif">
+        Nilesh Parmar — full-stack developer. Please enable JavaScript to view this portfolio, or
+        email nileshp19423@gmail.com.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

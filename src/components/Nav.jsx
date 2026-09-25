@@ -1,122 +1,105 @@
-import { useState } from 'react';
-import { Hover } from './Hover.jsx';
-import { RESUME_URL } from '../data/portfolio.js';
+import { useEffect, useState } from 'react';
+import { navLinks, RESUME_URL } from '../data/portfolio.js';
+import { useScrollSpy } from '../hooks/useScrollSpy.js';
+import { ArrowRight, Close, Download, Menu, Moon, Sun } from './ui/Icons.jsx';
+import { SocialLinks } from './ui/SocialLinks.jsx';
+import './Nav.css';
 
-const NAV_LINKS = ['about', 'experience', 'projects', 'github', 'contact'];
+// Every section is observed so the highlight clears on sections without a link.
+const SPY_IDS = ['top', 'about', 'experience', 'projects', 'github', 'contact'];
 
 export function Nav({ theme, toggleTheme }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const themeIcon = theme === 'dark' ? '☾' : '☀';
-  const themeLabel = theme === 'dark' ? 'dark' : 'light';
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const active = useScrollSpy(SPY_IDS);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => e.key === 'Escape' && setOpen(false);
+    const onResize = () => window.innerWidth > 880 && setOpen(false);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [open]);
+
+  const nextTheme = theme === 'dark' ? 'light' : 'dark';
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 50,
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
-        background: 'var(--nav-bg)',
-        borderBottom: '1px solid var(--line)',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1160,
-          margin: '0 auto',
-          padding: '14px 28px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 26,
-        }}
-      >
-        <a href="#top" style={{ font: "600 15px 'IBM Plex Mono', monospace", color: 'var(--fg)' }}>
-          ~/<span style={{ color: 'var(--accent)' }}>nilesh</span>
+    <header className={`nav${scrolled || open ? ' nav--solid' : ''}`}>
+      <div className="nav__progress" aria-hidden="true" />
+      <div className="container nav__inner">
+        <a href="#top" className="nav__brand" aria-label="Nilesh Parmar — back to top">
+          <span className="nav__mark" aria-hidden="true">
+            N
+          </span>
+          <span className="nav__brand-name">Nilesh Parmar</span>
         </a>
-        <div style={{ flex: 1 }} />
-        <div
-          className="np-nav-links"
-          style={{
-            display: 'flex',
-            gap: 20,
-            alignItems: 'center',
-            font: "500 12.5px 'IBM Plex Mono', monospace",
-          }}
-        >
-          {NAV_LINKS.map((link) => (
-            <Hover
-              key={link}
-              as="a"
-              href={`#${link}`}
-              onClick={() => setMenuOpen(false)}
-              style={{ color: 'var(--fg2)' }}
-              hoverStyle={{ color: 'var(--accent)' }}
+
+        <nav className="nav__links" aria-label="Primary">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              className={`nav__link${active === link.id ? ' is-active' : ''}`}
+              aria-current={active === link.id ? 'location' : undefined}
             >
-              {link}
-            </Hover>
+              {link.label}
+            </a>
           ))}
+        </nav>
+
+        <div className="nav__actions">
+          <button
+            type="button"
+            className="icon-btn nav__theme"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${nextTheme} theme`}
+            title={`Switch to ${nextTheme} theme`}
+          >
+            {theme === 'dark' ? <Sun /> : <Moon />}
+          </button>
+          <a className="btn btn--primary btn--sm" href={RESUME_URL} target="_blank" rel="noreferrer">
+            Resume
+            <Download />
+          </a>
+          <button
+            type="button"
+            className="icon-btn nav__menu-btn"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            onClick={() => setOpen((o) => !o)}
+          >
+            {open ? <Close /> : <Menu />}
+          </button>
         </div>
-        <button
-          className="np-nav-menu"
-          type="button"
-          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-          style={{ display: 'none', placeItems: 'center', width: 42, height: 42, padding: 0, cursor: 'pointer', color: 'var(--fg)', background: 'transparent', border: '1px solid var(--line2)', borderRadius: 9, font: "600 18px 'IBM Plex Mono', monospace" }}
-        >
-          {menuOpen ? '×' : '≡'}
-        </button>
-        <Hover
-          as="button"
-          className="np-theme-toggle"
-          onClick={toggleTheme}
-          title="toggle theme"
-          style={{
-            cursor: 'pointer',
-            background: 'none',
-            border: '1px solid var(--line2)',
-            borderRadius: 99,
-            color: 'var(--fg)',
-            font: "500 12px 'IBM Plex Mono', monospace",
-            padding: '7px 14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 7,
-            transition: 'border-color 0.2s',
-          }}
-          hoverStyle={{ borderColor: 'var(--accent)' }}
-        >
-          {themeIcon} {themeLabel}
-        </Hover>
-        <Hover
-          as="a"
-          className="np-resume-link"
-          href={RESUME_URL}
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            background: 'var(--accent)',
-            color: 'var(--accent-ink)',
-            font: "600 12.5px 'IBM Plex Mono', monospace",
-            padding: '8px 16px',
-            borderRadius: 8,
-            transition: 'transform 0.15s',
-          }}
-          hoverStyle={{ transform: 'translateY(-1px)', color: 'var(--accent-ink)' }}
-        >
-          resume ⤓
-        </Hover>
       </div>
-      {menuOpen && (
-        <div className="np-mobile-menu" style={{ display: 'none', padding: '4px 28px 18px', borderTop: '1px solid var(--line)', background: 'var(--nav-bg)' }}>
-          {NAV_LINKS.map((link) => (
-            <a key={link} href={`#${link}`} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '12px 0', color: 'var(--fg2)', font: "500 13px 'IBM Plex Mono', monospace" }}>{link}</a>
-          ))}
-        </div>
-      )}
-    </div>
+
+      <div id="mobile-menu" className="nav__sheet" hidden={!open}>
+        <nav className="container" aria-label="Mobile">
+          <ul className="nav__sheet-links">
+            {navLinks.map((link, i) => (
+              <li key={link.id} style={{ '--i': i }}>
+                <a href={`#${link.id}`} onClick={() => setOpen(false)}>
+                  {link.label}
+                  <ArrowRight />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <SocialLinks className="nav__sheet-socials" />
+        </nav>
+      </div>
+    </header>
   );
 }

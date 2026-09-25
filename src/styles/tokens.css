@@ -1,0 +1,100 @@
+/* Design tokens. Dark is the default; [data-theme='light'] swaps the palette.
+   The terminal keeps its own dark palette in both themes. */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #09090b;
+  --bg-raised: #0d0d10;
+  --surface: #111114;
+  --surface-2: #17171b;
+  --surface-3: #212126;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.11);
+  --line-3: rgba(255, 255, 255, 0.2);
+
+  --fg: #fafafa;
+  --fg-2: #a1a1aa;
+  --fg-3: #7c7c86;
+
+  /* --accent is for text/icons, --accent-bg for filled surfaces (buttons). */
+  --accent: #cdf26b;
+  --accent-bg: #cdf26b;
+  --accent-bg-hover: #dcff82;
+  --accent-ink: #10150a;
+  --accent-soft: rgba(205, 242, 107, 0.1);
+  --accent-line: rgba(205, 242, 107, 0.3);
+  --accent-glow: rgba(205, 242, 107, 0.12);
+  --amber: #f5b454;
+  --amber-soft: rgba(245, 180, 84, 0.12);
+
+  --shadow-lg: 0 40px 100px -30px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --shadow-md: 0 18px 40px -18px rgba(0, 0, 0, 0.75);
+  --nav-bg: rgba(9, 9, 11, 0.72);
+
+  --gh-0: #1a1a1f;
+  --gh-1: #33481f;
+  --gh-2: #5b812b;
+  --gh-3: #98c647;
+  --gh-4: #cdf26b;
+
+  --t-bg: #08080a;
+  --t-head: #0f0f12;
+  --t-line: #232329;
+  --t-fg: #e4e4e7;
+  --t-dim: #83838d;
+  --t-green: #cdf26b;
+  --t-amber: #f5b454;
+  --t-red: #ff7b72;
+
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Reserved for code: the terminal and code inside illustrations. */
+  --font-code: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --container: 1180px;
+  --gutter: clamp(18px, 4vw, 32px);
+  --nav-h: 64px;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --bg-raised: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f4f4f5;
+  --surface-3: #e8e8eb;
+  --line: rgba(9, 9, 11, 0.08);
+  --line-2: rgba(9, 9, 11, 0.12);
+  --line-3: rgba(9, 9, 11, 0.22);
+
+  --fg: #09090b;
+  --fg-2: #52525b;
+  --fg-3: #6b6b74;
+
+  --accent: #4d7c0f;
+  --accent-bg: #bef264;
+  --accent-bg-hover: #a3e635;
+  --accent-ink: #1a2e05;
+  --accent-soft: rgba(101, 163, 13, 0.1);
+  --accent-line: rgba(77, 124, 15, 0.3);
+  --accent-glow: rgba(163, 230, 53, 0.18);
+  --amber: #a15c07;
+  --amber-soft: rgba(217, 119, 6, 0.1);
+
+  --shadow-lg: 0 40px 90px -35px rgba(9, 9, 11, 0.22), 0 0 0 1px rgba(9, 9, 11, 0.04);
+  --shadow-md: 0 18px 40px -20px rgba(9, 9, 11, 0.2);
+  --nav-bg: rgba(255, 255, 255, 0.78);
+
+  --gh-0: #ededf0;
+  --gh-1: #d4ee9f;
+  --gh-2: #9fd14a;
+  --gh-3: #65a30d;
+  --gh-4: #3f6212;
+}

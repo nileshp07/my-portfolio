@@ -1,220 +1,201 @@
-import { socials, GITHUB_USERNAME } from '../data/portfolio.js';
+import { useEffect, useRef } from 'react';
+import { GITHUB_USERNAME, socials } from '../data/portfolio.js';
+import { ArrowUpRight } from './ui/Icons.jsx';
+import { Reveal } from './ui/Reveal.jsx';
+import { SectionHeader } from './ui/SectionHeader.jsx';
+import { TechIcon } from './ui/TechIcon.jsx';
+import './GitHub.css';
 
-export function GitHub({ github }) {
-  const { ok, failed, weeks, totalLabel, langs, visibleStats } = github;
+const WEEKDAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
+
+const formatDay = (iso) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+function Heatmap({ data }) {
+  const scrollRef = useRef(null);
+
+  // On narrow screens the graph scrolls; start at the most recent weeks.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, [data]);
 
   return (
-    <div
-      id="github"
-      style={{ maxWidth: 1160, margin: '0 auto', padding: '110px 28px 0', scrollMarginTop: 70 }}
-    >
-      <div data-reveal style={{ font: "500 13px 'IBM Plex Mono', monospace", color: 'var(--accent)' }}>
-        $ gh profile {GITHUB_USERNAME} --live
-      </div>
-      <div
-        data-reveal
-        style={{
-          display: 'flex',
-          alignItems: 'baseline',
-          gap: 16,
-          flexWrap: 'wrap',
-          marginTop: 14,
-        }}
-      >
-        <h2
-          style={{
-            font: "700 clamp(30px, 3.4vw, 42px)/1.15 'Space Grotesk', sans-serif",
-            letterSpacing: '-0.02em',
-            margin: 0,
-          }}
-        >
-          Proof of work
-        </h2>
-        <span style={{ font: "400 13px 'IBM Plex Mono', monospace", color: 'var(--fg3)' }}>
-          fetched live from the GitHub API
-        </span>
-      </div>
-
-      {/* Stat cards */}
-      <div
-        data-reveal
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
-          gap: 20,
-          marginTop: 36,
-        }}
-      >
-        {/* {visibleStats.map((st) => (
-          <div
-            key={st.label}
-            style={{
-              border: '1px solid var(--line)',
-              borderRadius: 14,
-              background: 'var(--panel)',
-              padding: '22px 24px',
-            }}
-          >
-            <div style={{ font: "700 34px 'Space Grotesk', sans-serif", color: 'var(--accent)' }}>
-              {st.v}
-            </div>
-            <div
-              style={{
-                font: "500 11.5px 'IBM Plex Mono', monospace",
-                color: 'var(--fg3)',
-                letterSpacing: '0.1em',
-                marginTop: 5,
-              }}
-            >
-              {st.label}
-            </div>
-          </div>
-        ))} */}
-      </div>
-
-      {/* Contribution graph */}
-      <div
-        data-reveal
-        style={{
-          border: '1px solid var(--line)',
-          borderRadius: 16,
-          background: 'var(--panel)',
-          padding: '26px 30px',
-          marginTop: 20,
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            flexWrap: 'wrap',
-            gap: 8,
-          }}
-        >
-          <div style={{ font: "600 13px 'IBM Plex Mono', monospace", color: 'var(--fg2)' }}>
-            {totalLabel}
-          </div>
-          <a href={socials.github} target="_blank" rel="noreferrer"
-            style={{ font: "500 12px 'IBM Plex Mono', monospace" }}>
-            @{GITHUB_USERNAME} ↗
-          </a>
+    <div className="heatmap" ref={scrollRef}>
+      <div className="heatmap__grid" style={{ '--weeks': data.weeks.length }}>
+        <div className="heatmap__months" aria-hidden="true">
+          {data.months.map((m) => (
+            <span key={`${m.label}-${m.index}`} style={{ gridColumn: `${m.index + 1} / span 4` }}>
+              {m.label}
+            </span>
+          ))}
         </div>
-
-        {ok && (
-          <>
-            <div style={{ overflowX: 'auto', marginTop: 18, paddingBottom: 4 }}>
-              <div style={{ display: 'flex', gap: 3, width: 'max-content' }}>
-                {weeks.map((w, wi) => (
-                  <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {w.days.map((d, di) => (
-                      <div
-                        key={di}
-                        title={d.tip}
-                        style={{ width: 11, height: 11, borderRadius: 2.5, background: d.bg }}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                gap: 5,
-                marginTop: 12,
-                font: "400 11px 'IBM Plex Mono', monospace",
-                color: 'var(--fg3)',
-              }}
-            >
-              less
-              {['--gh0', '--gh1', '--gh2', '--gh3', '--gh4'].map((v) => (
+        <div className="heatmap__days" aria-hidden="true">
+          {WEEKDAYS.map((d, i) => (
+            <span key={i}>{d}</span>
+          ))}
+        </div>
+        <div
+          className="heatmap__cells"
+          role="img"
+          aria-label={`${data.total} GitHub contributions in the last year`}
+        >
+          {data.weeks.flatMap((week, wi) =>
+            week.map((day, di) =>
+              day ? (
                 <span
-                  key={v}
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: 2,
-                    background: `var(${v})`,
-                    display: 'inline-block',
-                  }}
+                  key={day.date}
+                  className="heatmap__cell"
+                  data-level={Math.min(day.level, 4)}
+                  title={`${day.count} contribution${day.count === 1 ? '' : 's'} · ${formatDay(day.date)}`}
                 />
-              ))}
-              more
-            </div>
-          </>
-        )}
-
-        {failed && (
-          <img
-            src={`https://ghchart.rshah.org/26a641/${GITHUB_USERNAME}`}
-            alt="GitHub contributions"
-            style={{ width: '100%', marginTop: 18 }}
-          />
-        )}
-      </div>
-
-      {/* Top languages */}
-      <div
-        data-reveal
-        style={{
-          border: '1px solid var(--line)',
-          borderRadius: 16,
-          background: 'var(--panel)',
-          padding: '26px 30px',
-          marginTop: 20,
-        }}
-      >
-        <div style={{ font: "600 13px 'IBM Plex Mono', monospace", color: 'var(--fg2)' }}>
-          top languages{' '}
-          <span style={{ color: 'var(--fg3)' }}>— weighted by code volume across public repos</span>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            height: 12,
-            borderRadius: 99,
-            overflow: 'hidden',
-            marginTop: 18,
-            background: 'var(--gh0)',
-          }}
-        >
-          {langs.map((l) => (
-            <div
-              key={l.name}
-              title={l.name}
-              style={{ width: l.w, background: l.color, transition: 'width 0.8s' }}
-            />
-          ))}
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, marginTop: 14 }}>
-          {langs.map((l) => (
-            <div
-              key={l.name}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 7,
-                font: "500 12px 'IBM Plex Mono', monospace",
-                color: 'var(--fg2)',
-              }}
-            >
-              <span
-                style={{
-                  width: 9,
-                  height: 9,
-                  borderRadius: '50%',
-                  background: l.color,
-                  display: 'inline-block',
-                }}
-              />
-              {l.name} <span style={{ color: 'var(--fg3)' }}>{l.pct}</span>
-            </div>
-          ))}
+              ) : (
+                <span key={`pad-${wi}-${di}`} className="heatmap__cell heatmap__cell--pad" />
+              )
+            )
+          )}
         </div>
       </div>
     </div>
+  );
+}
+
+function Legend() {
+  return (
+    <div className="heatmap__legend" aria-hidden="true">
+      Less
+      {[0, 1, 2, 3, 4].map((l) => (
+        <span key={l} className="heatmap__cell" data-level={l} />
+      ))}
+      More
+    </div>
+  );
+}
+
+function ContributionsPanel({ contributions }) {
+  const { status } = contributions;
+
+  return (
+    <div className="panel gh-contrib">
+      <div className="gh-contrib__head">
+        <div>
+          {status === 'loading' && <span className="skeleton gh-skel-number" />}
+          {status === 'ok' && (
+            <p className="gh-contrib__total">{contributions.total.toLocaleString()}</p>
+          )}
+          <p className="gh-contrib__label">contributions in the last 12 months</p>
+        </div>
+        {status === 'ok' && contributions.busiest.count > 0 && (
+          <p className="gh-contrib__busiest">
+            <span className="label">Busiest day</span>
+            {formatDay(contributions.busiest.date)} · {contributions.busiest.count} contributions
+          </p>
+        )}
+      </div>
+
+      {status === 'loading' && <div className="skeleton gh-skel-graph" />}
+      {status === 'ok' && (
+        <>
+          <Heatmap data={contributions} />
+          <Legend />
+        </>
+      )}
+      {status === 'error' && (
+        <img
+          className="gh-contrib__fallback"
+          src={`https://ghchart.rshah.org/7fae2e/${GITHUB_USERNAME}`}
+          alt="GitHub contribution chart"
+          loading="lazy"
+        />
+      )}
+    </div>
+  );
+}
+
+function LanguagesPanel({ languages }) {
+  const { status, langs } = languages;
+  return (
+    <div className="panel gh-langs">
+      <h3 className="gh-panel-title">Top languages</h3>
+      <p className="gh-panel-sub">By code volume across public repos</p>
+
+      {status === 'loading' ? (
+        <div className="skeleton gh-skel-bar" />
+      ) : (
+        <>
+          <div className="gh-langs__bar" role="img" aria-label={langs.map((l) => `${l.name} ${Math.round(l.pct)}%`).join(', ')}>
+            {langs.map((l) => (
+              <span key={l.name} style={{ flexGrow: l.pct, background: l.color }} />
+            ))}
+          </div>
+          <ul className="gh-langs__list">
+            {langs.map((l) => (
+              <li key={l.name}>
+                <span className="gh-langs__swatch" style={{ background: l.color }} />
+                <span>{l.name}</span>
+                <span className="gh-langs__pct">{l.pct.toFixed(1)}%</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ProfilePanel() {
+  return (
+    <div className="panel gh-profile">
+      <div className="gh-profile__id">
+        <img
+          src={`https://github.com/${GITHUB_USERNAME}.png?size=112`}
+          alt=""
+          width="56"
+          height="56"
+          loading="lazy"
+        />
+        <div>
+          <p className="gh-profile__handle">@{GITHUB_USERNAME}</p>
+          <p className="gh-panel-sub">github.com/{GITHUB_USERNAME}</p>
+        </div>
+      </div>
+      <p className="gh-profile__note">
+        Most of my production work lives in private company repos. Public repos hold side projects,
+        course work and experiments.
+      </p>
+      <a className="btn btn--ghost btn--sm gh-profile__cta" href={socials.github} target="_blank" rel="noreferrer">
+        <TechIcon slug="github" size={14} mono />
+        View profile
+        <ArrowUpRight />
+      </a>
+    </div>
+  );
+}
+
+export function GitHub({ github }) {
+  return (
+    <section id="github" className="section" aria-labelledby="github-title">
+      <div className="container">
+        <SectionHeader
+          id="github-title"
+          kicker="GitHub"
+          title="Proof of work."
+          subtitle="Pulled live from the GitHub API."
+        />
+
+        <Reveal>
+          <ContributionsPanel contributions={github.contributions} />
+        </Reveal>
+
+        <div className="gh-row">
+          <Reveal delay={60}>
+            <LanguagesPanel languages={github.languages} />
+          </Reveal>
+          <Reveal delay={140}>
+            <ProfilePanel />
+          </Reveal>
+        </div>
+      </div>
+    </section>
   );
 }
