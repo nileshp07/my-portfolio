@@ -1,17 +1,23 @@
-import { featuredProject, projects, socials } from '../data/portfolio.js';
-import { ArrowUpRight, Layers, Lock, Shield, Sparkle } from './ui/Icons.jsx';
+import { projects, socials } from '../data/portfolio.js';
+import { ArrowUpRight, Lock } from './ui/Icons.jsx';
 import { Reveal } from './ui/Reveal.jsx';
 import { SectionHeader } from './ui/SectionHeader.jsx';
 import { Spotlight } from './ui/Spotlight.jsx';
 import { Chip, TechIcon } from './ui/TechIcon.jsx';
 import './Projects.css';
 
-const HIGHLIGHT_ICONS = [Layers, Shield, Sparkle];
-
-// A project screenshot in a light browser frame. Renders nothing until the
-// project has an `image` (see src/data/portfolio.js).
-function Screenshot({ project, eager = false }) {
-  if (!project.image) return null;
+// A project screenshot in a light browser frame, or its logo when it has one
+// instead (see src/data/portfolio.js). Projects with neither get a wordmark
+// panel so every card in the grid keeps the same shape.
+function Screenshot({ project }) {
+  if (project.logo) return <Logo project={project} />;
+  if (!project.image) {
+    return (
+      <div className="logo-stage" aria-hidden="true">
+        <span className="logo-stage__wordmark">{project.name}</span>
+      </div>
+    );
+  }
   return (
     <div className="shot">
       <div className="shot__frame">
@@ -23,10 +29,36 @@ function Screenshot({ project, eager = false }) {
         <img
           src={project.image}
           alt={project.imageAlt || `Screenshot of ${project.name}`}
-          loading={eager ? 'eager' : 'lazy'}
+          loading="lazy"
           decoding="async"
         />
       </div>
+    </div>
+  );
+}
+
+// A brand logo centred on the card's header panel. `logoDark` (optional)
+// replaces it on the dark theme for marks that need a light variant;
+// `logoInvert` handles a black-on-white raster logo instead.
+function Logo({ project }) {
+  const alt = project.imageAlt || `${project.name} logo`;
+  const variant = project.logoDark
+    ? 'logo-stage__img--light'
+    : project.logoInvert
+      ? 'logo-stage__img--invert'
+      : undefined;
+  return (
+    <div className="logo-stage">
+      <img className={variant} src={project.logo} alt={alt} loading="lazy" decoding="async" />
+      {project.logoDark && (
+        <img
+          className="logo-stage__img--dark"
+          src={project.logoDark}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
     </div>
   );
 }
@@ -59,68 +91,23 @@ function ProjectLinks({ project }) {
   );
 }
 
-function FeaturedProject({ project }) {
-  return (
-    <Reveal>
-      <Spotlight as="article" className="feature" aria-labelledby="feature-title">
-        <Screenshot project={project} eager />
-
-        <div className="feature__grid">
-          <div className="feature__intro">
-            <div className="feature__badges">
-              <span className="badge badge--accent">Featured</span>
-              <span className="badge badge--outline">{project.kicker}</span>
-            </div>
-            <h3 id="feature-title" className="feature__title">
-              {project.name}
-            </h3>
-            <p className="feature__role">{project.role}</p>
-            <p className="feature__summary">{project.summary}</p>
-            <ul className="chips feature__stack" aria-label="Tech used">
-              {project.stack.map((s) => (
-                <Chip key={s} label={s} />
-              ))}
-            </ul>
-            <ProjectLinks project={project} />
-          </div>
-
-          <ul className="feature__points">
-            {project.highlights.map((h, i) => {
-              const Icon = HIGHLIGHT_ICONS[i % HIGHLIGHT_ICONS.length];
-              return (
-                <li key={h.title}>
-                  <span className="feature__icon">
-                    <Icon />
-                  </span>
-                  <div>
-                    <p className="feature__point-title">{h.title}</p>
-                    <p className="feature__point-body">{h.body}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </Spotlight>
-    </Reveal>
-  );
-}
-
 function ProjectCard({ project, index }) {
   return (
-    <Reveal delay={index * 100} className="card-wrap">
+    <Reveal delay={(index % 2) * 100} className="card-wrap">
       <Spotlight as="article" className="card" aria-labelledby={`project-${project.name}`}>
         <Screenshot project={project} />
 
         <div className="card__body">
           <div className="card__top">
             <span className="card__kicker">{project.kicker}</span>
+            {project.featured && <span className="badge badge--accent">Featured</span>}
             {project.status && <span className="badge badge--amber">{project.status}</span>}
           </div>
 
           <h3 id={`project-${project.name}`} className="card__title">
             {project.name}
           </h3>
+          {project.role && <p className="card__role">{project.role}</p>}
           <p className="card__summary">{project.summary}</p>
 
           <ul className="card__points">
@@ -154,8 +141,6 @@ export function Projects() {
           title="Selected work."
           subtitle="Shipped and in progress."
         />
-
-        <FeaturedProject project={featuredProject} />
 
         <div className="projects__grid">
           {projects.map((project, i) => (

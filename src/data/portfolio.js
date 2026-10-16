@@ -57,15 +57,37 @@ export const tickerItems = [
 ];
 
 export const skillGroups = [
-  { label: 'Languages', items: ['JavaScript (ES2022+)', 'TypeScript', 'SQL', 'Python'] },
   {
     label: 'Frontend',
-    items: ['React', 'Next.js', 'React Native', 'Tailwind CSS', 'shadcn/ui', 'Material UI'],
+    items: [
+      'React.js',
+      'TypeScript',
+      'JavaScript (ES6+)',
+      'Next.js',
+      'React Native',
+      'Tailwind CSS',
+      'Material UI',
+      'shadcn/ui',
+    ],
   },
-  { label: 'Backend', items: ['Node.js', 'Express.js', 'Cloud Functions', 'REST API design'] },
-  { label: 'Data', items: ['Firestore', 'PostgreSQL', 'MongoDB', 'Supabase', 'Prisma ORM'] },
-  { label: 'AI / LLM', items: ['OpenRouter', 'LLM integration', 'Structured JSON output'] },
-  { label: 'Tooling', items: ['Git', 'Docker', 'Figma', 'Claude Code', 'Cursor'] },
+  {
+    label: 'Backend',
+    items: [
+      'Node.js',
+      'Express.js',
+      'REST APIs',
+      'Firebase Cloud Functions',
+      'JWT authentication',
+      'RBAC',
+      'Scheduled jobs',
+    ],
+  },
+  { label: 'Data', items: ['Firebase / Firestore', 'MongoDB', 'PostgreSQL', 'Supabase', 'Prisma ORM'] },
+  {
+    label: 'AI / LLM',
+    items: ['OpenRouter APIs', 'LLM integration', 'Prompt engineering', 'Structured JSON generation'],
+  },
+  { label: 'Tooling', items: ['Git', 'Docker', 'Figma'] },
 ];
 
 export const experience = [
@@ -99,37 +121,64 @@ export const experience = [
   },
 ];
 
-// Screenshots: drop an image in public/projects/ and set `image` to its path,
-// e.g. image: '/projects/dexerp.png'. A 16:9 capture works best (it's cropped
-// from the top). Projects without an image show a text-only card.
-
-export const featuredProject = {
-  name: 'DexERP',
-  image: null,
-  imageAlt: 'DexERP form builder',
-  kicker: 'In production at Innover Labs',
-  role: 'Core contributor, full stack',
-  summary:
-    'A multi-tenant ERP platform where every organization shapes its own forms, workflows and permissions — no deploy required.',
-  highlights: [
-    {
-      title: 'No-code schema & workflow builder',
-      body: 'Orgs define custom data schemas, workflows and UIs that the platform renders at runtime.',
-    },
-    {
-      title: 'Tenant-scoped RBAC',
-      body: 'Permissions for users and groups, enforced at form and form-group level across tenant boundaries.',
-    },
-    {
-      title: 'Natural language → form config',
-      body: 'An LLM pipeline on Cloud Functions turns a plain-English prompt into a structured form definition.',
-    },
-  ],
-  stack: ['React', 'TypeScript', 'Firebase', 'Cloud Functions', 'Node.js', 'OpenRouter'],
-  note: 'Proprietary product — happy to walk through the architecture on a call.',
-};
+// Card images: drop a file in public/projects/ and point a project at it.
+// - `image`: a 16:9 screenshot (cropped from the top).
+// - `logo`: a brand logo, shown centred instead of cropped. `logoDark` swaps
+//   in on the dark theme; `logoInvert` handles a black-on-white raster logo.
+// Projects with neither get a panel showing their name.
 
 export const projects = [
+  {
+    name: 'DexERP',
+    featured: true,
+    kicker: 'Multi-tenant ERP',
+    logo: '/projects/dexerp-logo.jpeg',
+    logoInvert: true,
+    imageAlt: 'DexERP logo',
+    role: 'Core contributor · full stack',
+    summary:
+      'A multi-tenant ERP platform where every organization shapes its own forms, workflows and permissions — no deploy required.',
+    points: [
+      'Configurable form builder — orgs define custom forms, data structures and workflows without code changes',
+      'Tenant-scoped Firestore access patterns with granular RBAC',
+      'AI-generated form configurations via server-side LLM integrations',
+    ],
+    stack: ['React', 'TypeScript', 'Node.js', 'Firebase', 'OpenRouter'],
+    note: 'Proprietary product — happy to walk through it on a call.',
+  },
+  {
+    name: 'ClockIn HR',
+    kicker: 'Multi-tenant attendance & HRMS',
+    logo: '/projects/clockinhr-logo-light.png',
+    logoDark: '/projects/clockinhr-logo-dark.png',
+    imageAlt: 'ClockIn HR logo',
+    role: 'Contributor · part of the Innover Labs product team',
+    summary:
+      'A multi-tenant attendance and HR platform for multi-site teams — face-recognition clock-in, shifts, leave and payroll on web, Android and iOS.',
+    points: [
+      'Login-free kiosk flow: detects a nearby Bluetooth beacon, resolves the org and site, then triggers face scanning for attendance',
+      'Shift-aware scheduled jobs that message employees based on their assigned shifts',
+      'Platform covers attendance, organization and site management, shifts and HR operations',
+    ],
+    stack: ['React', 'Capacitor', 'Node.js', 'Express', 'PostgreSQL', 'AWS'],
+    liveUrl: 'https://www.clockinhr.com',
+  },
+  {
+    name: 'HPX Fitness Centre',
+    kicker: 'Booking platform',
+    logo: '/projects/hpx-logo.png',
+    imageAlt: 'HPX Hybrid Performance Studio logo',
+    summary:
+      'A class-booking platform for a fitness studio — members self-book trainer-led sessions while admins run the schedule.',
+    points: [
+      'Capacity-safe bookings and waitlists inside Firestore transactions',
+      'Recurring schedules with trainer conflict prevention',
+      'Automated reminders and waitlist promotion via Cloud Functions',
+      'Admin reports on utilization, popular activities and no-shows',
+    ],
+    stack: ['Next.js', 'TypeScript', 'Firebase', 'Cloud Functions', 'Tailwind CSS'],
+    liveUrl: 'https://hpxstudio.com/',
+  },
   {
     name: 'KhataBuddy',
     kicker: 'Mobile app',
@@ -163,14 +212,14 @@ export const projects = [
 
 export const education = {
   degree: 'Bachelor of Computer Applications',
-  school: 'Ness Wadia College',
+  school: 'Ness Wadia College of Commerce, Pune',
   period: '2021 — 2024',
   grade: '8.5',
 };
 
 export const certifications = [
   {
-    title: 'The Ultimate React Course — React, Next.js, Redux',
+    title: 'The Ultimate React Course 2024: React, Next.js, Redux & More',
     issuer: 'Udemy',
     link: 'https://www.udemy.com/certificate/UC-a0460a4b-912b-4b8c-aca3-f950b88854fc/',
   },

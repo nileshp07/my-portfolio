@@ -42,111 +42,78 @@
 }
 
 @media (hover: hover) {
-  .feature:hover .shot__frame,
   .card:hover .shot__frame {
     transform: translateY(-6px);
   }
 }
 
-/* ============ Featured project ============ */
+/* ============ Logo panel ============ */
 
-.feature {
-  overflow: hidden;
-  border: 1px solid var(--line-2);
-  border-radius: var(--radius-xl);
-  background: var(--surface);
-}
-
-.feature__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(28px, 5vw, 72px);
-  padding: clamp(28px, 4vw, 52px);
-}
-
-.feature__badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.feature__title {
-  margin-top: 22px;
-  font-size: clamp(40px, 5vw, 64px);
-  line-height: 0.95;
-  letter-spacing: -0.05em;
-}
-
-.feature__role {
-  margin-top: 12px;
-  font-size: 14.5px;
-  font-weight: 500;
-  color: var(--accent);
-}
-
-.feature__summary {
-  margin-top: 16px;
-  max-width: 480px;
-  font-size: 17px;
-  line-height: 1.65;
-  color: var(--fg-2);
-}
-
-.feature__stack {
-  margin-top: 26px;
-}
-
-.feature__points {
-  display: grid;
-  align-content: center;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.feature__points li {
-  display: grid;
-  grid-template-columns: 40px minmax(0, 1fr);
-  gap: 16px;
-  padding: 22px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.feature__points li:first-child {
-  padding-top: 0;
-}
-
-.feature__points li:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-
-.feature__icon {
+.logo-stage {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  height: clamp(170px, 22vw, 210px);
+  padding: 28px;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(70% 80% at 50% 110%, var(--accent-glow), transparent 70%),
+    var(--bg-raised);
 }
 
-.feature__icon svg {
-  width: 19px;
-  height: 19px;
+.logo-stage img {
+  grid-area: 1 / 1;
+  width: auto;
+  max-width: min(78%, 280px);
+  max-height: 130px;
+  object-fit: contain;
+  transition: transform 0.6s var(--ease-out);
 }
 
-.feature__point-title {
-  font-size: 16.5px;
-  font-weight: 600;
-  letter-spacing: -0.015em;
+.logo-stage__wordmark {
+  font-size: clamp(30px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  color: var(--fg-3);
+  transition: transform 0.6s var(--ease-out), color 0.3s;
 }
 
-.feature__point-body {
-  margin-top: 5px;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--fg-2);
+@media (hover: hover) {
+  .card:hover .logo-stage__wordmark {
+    color: var(--fg-2);
+    transform: scale(1.04);
+  }
+}
+
+/* Theme-paired logos: dark-ink mark on light, light-ink mark on dark. */
+.logo-stage__img--light {
+  display: none;
+}
+
+[data-theme='light'] .logo-stage__img--light {
+  display: block;
+}
+
+[data-theme='light'] .logo-stage__img--dark {
+  display: none;
+}
+
+/* Black-on-white raster logo: invert + screen drops the background on dark,
+   multiply drops it on light. The clip trims a stray edge line in the file. */
+.logo-stage__img--invert {
+  clip-path: inset(0 3% 0 0);
+  filter: invert(1);
+  mix-blend-mode: screen;
+}
+
+[data-theme='light'] .logo-stage__img--invert {
+  filter: none;
+  mix-blend-mode: multiply;
+}
+
+@media (hover: hover) {
+  .card:hover .logo-stage img {
+    transform: scale(1.04);
+  }
 }
 
 /* ============ Links / notes ============ */
@@ -214,6 +181,7 @@
 
 .card__top {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
@@ -229,6 +197,13 @@
   margin-top: 14px;
   font-size: clamp(28px, 2.8vw, 34px);
   letter-spacing: -0.04em;
+}
+
+.card__role {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
 }
 
 .card__summary {
@@ -277,20 +252,6 @@
   display: flex;
   justify-content: center;
   margin-top: 36px;
-}
-
-@media (max-width: 960px) {
-  .feature__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .feature__points li:first-child {
-    padding-top: 22px;
-  }
-
-  .feature__points {
-    border-top: 1px solid var(--line);
-  }
 }
 
 @media (max-width: 860px) {
